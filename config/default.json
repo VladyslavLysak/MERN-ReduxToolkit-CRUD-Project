@@ -1,0 +1,4 @@
+{
+    "port": 5000,
+    "mongoUri": "mongodb+srv://test:test1234@cluster0.hzrsf.mongodb.net/webbylab?retryWrites=true&w=majority"
+}

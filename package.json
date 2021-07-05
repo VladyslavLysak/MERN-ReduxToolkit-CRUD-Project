@@ -1,0 +1,36 @@
+{
+  "name": "webbylab",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon -r esm app.js",
+    "frontend": "npm run start --prefix frontend",
+    "dev": "cross-env NODE_ENV=development concurrently \"npm run server\" \"npm run frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VladyslavLysak/Webbylab.git"
+  },
+  "author": "Vladyslav Lysak",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VladyslavLysak/Webbylab/issues"
+  },
+  "homepage": "https://github.com/VladyslavLysak/Webbylab#readme",
+  "dependencies": {
+    "config": "^3.3.6",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "fs": "^0.0.1-security",
+    "mongoose": "^5.13.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "nodemon": "^2.0.9"
+  }
+}
