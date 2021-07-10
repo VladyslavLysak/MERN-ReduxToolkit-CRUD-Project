@@ -6,8 +6,11 @@ import {
     fetchMovies,
     isMoviesLoading,
     selectMovies,
-    selectMovieSearch
+    selectMovieSearch,
+    selectIsDesc
 } from 'Redux/reducers/moviesSlice';
+
+import { colors } from 'Constants';
 
 import Loader from 'Components/helpers/Loader';
 import Sidebar from 'Components/helpers/Sibebar';
@@ -30,6 +33,16 @@ const useStyles = makeStyles((theme) => ({
     },
     cardWrapper: {
         padding: '1em 0.5em'
+    },
+    notFoundContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 'calc(100vh - 60px)'
+    },
+    notFoundText: {
+        fontSize: 36,
+        color: colors.thirdGrey
     }
 }));
 
@@ -40,6 +53,7 @@ const Home = () => {
     const isLoading = useSelector(isMoviesLoading);
     const movies = useSelector(selectMovies);
     const search = useSelector(selectMovieSearch);
+    const isDesc = useSelector(selectIsDesc);
 
     useEffect(() => {
         dispatch(fetchMovies());
@@ -49,18 +63,26 @@ const Home = () => {
         movie.title.toLowerCase().includes(search.toLowerCase()) ||
         movie.actors.find(el => el.name.toLowerCase().includes(search.toLowerCase()))
     );
-    const sortedMovies = filteredMovies?.sort((a, b) => a.title.localeCompare(b.title))
+    const sortedMovies = filteredMovies?.sort((a, b) => !isDesc ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
 
     return (
         <Grid container className={classes.root}>
             {isLoading && <Loader />}
-            <Grid item xs={12} md={9} className={classes.moviesContainer}>
-                {sortedMovies?.map(movie =>
-                    <Grid item xs={12} md={6} lg={3} key={movie._id} className={classes.cardWrapper}>
-                        <MovieCard movie={movie} />
-                    </Grid>
-                )}
-            </Grid>
+            {!filteredMovies.length && !isLoading ? (
+                <Grid item xs={12} md={9} className={classes.notFoundContainer}>
+                    <h2 className={classes.notFoundText}>
+                        Movie not found
+                    </h2>
+                </Grid>
+            ) : (
+                <Grid item xs={12} md={9} className={classes.moviesContainer}>
+                    {sortedMovies?.map(movie =>
+                        <Grid item xs={12} md={6} lg={3} key={movie._id} className={classes.cardWrapper}>
+                            <MovieCard movie={movie} />
+                        </Grid>
+                    )}
+                </Grid>
+            )}
             <Grid item xs={12} md={3}>
                 <Sidebar />
             </Grid>

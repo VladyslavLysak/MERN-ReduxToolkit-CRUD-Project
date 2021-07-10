@@ -1,9 +1,15 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { makeStyles, TextField, Grid, Button, Select, MenuItem } from '@material-ui/core';
 import { AddCircle, Close } from '@material-ui/icons';
 import { Formik, FieldArray } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { colors } from 'Constants';
+import {
+    successCreateToast,
+    failureCreateToast,
+    successEditToast,
+    failureEditToast
+} from 'Components/helpers/Toast';
 
 import {
     initialValues,
@@ -84,26 +90,31 @@ const MovieForm = ({ isEdit, isOpen, handleClose, title, movie }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const [actorCount, setActorCount] = useState(0);
-
     const error = useSelector(selectMovieError);
 
-    useEffect(() => {
-        setActorCount(0)
-    }, [isOpen])
-
     const submitHandler = useCallback((values) => {
+        const uniqueActors = values.actors.filter((v, i, a) => a.findIndex(t => (t.name === v.name && t.surname === v.surname)) === i);
+        const updatedValues = {
+            ...values,
+            actors: uniqueActors
+        }
         if (isEdit) {
-            dispatch(updateMovie({ values, id: movie._id })).then((res) => {
+            dispatch(updateMovie({ values: updatedValues, id: movie._id })).then((res) => {
                 if (!res.error) {
                     handleClose();
+                    successEditToast();
+                } else {
+                    failureEditToast();
                 }
             });
         } else {
-            dispatch(createMovie(values))
+            dispatch(createMovie(updatedValues))
                 .then((res) => {
                     if (!res.error) {
                         handleClose();
+                        successCreateToast();
+                    } else {
+                        failureCreateToast();
                     }
                 });
         };
@@ -131,7 +142,7 @@ const MovieForm = ({ isEdit, isOpen, handleClose, title, movie }) => {
         >
             <Formik
                 initialValues={movie ? movie : initialValues}
-                validationSchema={getValidationSchema.bind(null, actorCount)}
+                validationSchema={getValidationSchema.bind(null)}
                 onSubmit={submitHandler}
             >
                 {({

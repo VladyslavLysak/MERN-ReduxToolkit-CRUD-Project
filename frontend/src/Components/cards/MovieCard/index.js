@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core';
 import { Delete, Edit } from '@material-ui/icons';
 import { useDispatch } from 'react-redux';
 import { colors } from 'Constants';
+import { deleteToast } from 'Components/helpers/Toast';
 
 import {
     deleteMovie
@@ -97,7 +98,12 @@ const MovieCard = ({ movie }) => {
     }, [])
 
     const onDeleteMovie = useCallback(() => {
-        dispatch(deleteMovie(movie._id));
+        dispatch(deleteMovie(movie._id))
+            .then(res => {
+                if (!res.error) {
+                    deleteToast();
+                }
+            });
     }, [dispatch, movie?._id]);
 
     const onEditOpen = useCallback((event) => {

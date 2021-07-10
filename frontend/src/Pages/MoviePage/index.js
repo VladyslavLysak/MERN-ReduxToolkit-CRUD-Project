@@ -32,7 +32,25 @@ const MoviePage = () => {
 
     return (
         <div>
-            {movie.title}
+            <h4>
+                {movie.title}
+            </h4>
+            <h4>
+                {movie.format}
+            </h4>
+            <h4>
+                {movie.realease}
+            </h4>
+            {movie.actors.map(actor => (
+                <div key={actor._id}>
+                    <h4>
+                        {actor.name}
+                    </h4>
+                    <h4>
+                        {actor.surname}
+                    </h4>
+                </div>
+            ))}
         </div>
     );
 };

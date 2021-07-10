@@ -18,10 +18,13 @@ export const getAllMovies = async (req, res) => {
 
 export const createMovie = async (req, res) => {
     const newMovie = new MoviesModel(req.body);
-    const oldMovie = await MoviesModel.findOne({ title: req.body.title });
+    const oldMovie = await MoviesModel.findOne({
+        title: req.body.title,
+        release: req.body.release
+    });
     if (oldMovie) {
         return res.status(422).json({
-            error: 'Movie with this title already exists',
+            error: 'Movie already exists',
         });
     }
     await newMovie.save();
@@ -43,6 +46,16 @@ export const deleteMovie = async (req, res) => {
 export const updateMovie = async (req, res) => {
     const movieId = req.params.id;
     const newMovie = req.body;
+    const oldMovie = await MoviesModel.findOne({
+        title: req.body.title,
+        release: req.body.release,
+        _id: { $ne: req.body._id }
+    });
+    if (oldMovie) {
+        return res.status(422).json({
+            error: 'Movie already exists',
+        });
+    }
     await MoviesModel.findOneAndUpdate({ _id: movieId }, newMovie);
     res.json({ movie: newMovie, success: true, status: 200 });
 }

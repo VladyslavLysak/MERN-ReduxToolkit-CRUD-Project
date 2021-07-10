@@ -9,9 +9,10 @@ export const initialValues = {
 };
 
 const year = Number(moment().format('YYYY'));
+const pattern = /^[a-zA-Z]/;
 
 export const getValidationSchema = () => Yup.object().shape({
-    title: Yup.string().required('Title is required'),
+    title: Yup.string().matches(pattern, 'Incorrect format').min(2, 'Please, provide full title').required('Title is required'),
     release: Yup.number()
         .typeError('Release must be a number')
         .min(1930, 'Realse must be less than 1930')
@@ -19,8 +20,8 @@ export const getValidationSchema = () => Yup.object().shape({
         .required('Release is required'),
     actors: Yup.array().of(
         Yup.object().shape({
-            name: Yup.string().required('Name is required'),
-            surname: Yup.string().required('Surname is required'),
+            name: Yup.string().matches(pattern, 'Incorrect format').min(3, 'Please, provide full name').required('Name is required'),
+            surname: Yup.string().matches(pattern, 'Incorrect format').min(3, 'Please, provide full surname').required('Surname is required'),
         })
     )
 });

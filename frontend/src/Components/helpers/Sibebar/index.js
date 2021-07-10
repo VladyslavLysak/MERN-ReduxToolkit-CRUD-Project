@@ -1,10 +1,15 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { makeStyles, TextField, InputAdornment } from '@material-ui/core';
-import { Search } from '@material-ui/icons';
+import { Search, ArrowUpwardOutlined } from '@material-ui/icons';
 import { Formik } from 'formik';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { colors } from 'Constants';
 
-import { onSearchValue } from 'Redux/reducers/moviesSlice';
+import {
+    onSearchValue,
+    onDescChange,
+    selectIsDesc
+} from 'Redux/reducers/moviesSlice';
 
 import {
     initialValues,
@@ -25,6 +30,19 @@ const useStyles = makeStyles((theme) => ({
     searchIcon: {
         color: 'rgb(0,0,0,0.42)',
         cursor: 'pointer'
+    },
+    sortIconContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        padding: theme.spacing(1, 0),
+    },
+    sortIcon: {
+        cursor: 'pointer',
+        color: colors.secondaryGrey,
+        transition: '1s'
+    },
+    sortAnimation: {
+        transform: 'rotate(180deg)'
     }
 }));
 
@@ -32,13 +50,9 @@ const Sidebar = () => {
 
     const classes = useStyles();
     const dispatch = useDispatch();
+    const isDesc = useSelector(selectIsDesc);
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [activeSearch, setActiveSearch] = useState('');
-
-    useEffect(() => {
-        dispatch(onSearchValue(activeSearch));
-    }, [activeSearch, dispatch])
 
     const onCreateOpen = useCallback(() => {
         setIsCreateOpen(true);
@@ -48,9 +62,19 @@ const Sidebar = () => {
         setIsCreateOpen(false);
     }, []);
 
-    const submitHandler = useCallback((values) => {
-        setActiveSearch(values.search)
-    }, []);
+    const onSearchChange = useCallback((e, handleChange) => {
+        const search = e.target.value;
+        if (search.length < 3) {
+            dispatch(onSearchValue(''));
+        } else {
+            dispatch(onSearchValue(search));
+        }
+        handleChange(e);
+    }, [dispatch]);
+
+    const onSortChange = useCallback(() => {
+        dispatch(onDescChange())
+    }, [dispatch]);
 
     return (
         <div className={classes.root}>
@@ -65,14 +89,11 @@ const Sidebar = () => {
             <Formik
                 initialValues={initialValues}
                 validationSchema={getValidationSchema.bind(null)}
-                onSubmit={submitHandler}
             >
                 {({
                     errors,
                     handleSubmit,
-                    setFieldValue,
                     handleChange,
-                    handleReset,
                     values,
                     touched
                 }) => {
@@ -93,7 +114,7 @@ const Sidebar = () => {
                                     variant="standard"
                                     margin="none"
                                     fullWidth
-                                    onChange={handleChange}
+                                    onChange={(e) => onSearchChange(e, handleChange)}
                                     value={values.search}
                                     id="search"
                                     InputProps={{
@@ -114,6 +135,9 @@ const Sidebar = () => {
                     )
                 }}
             </Formik>
+            <div className={classes.sortIconContainer} onClick={onSortChange}>
+                <ArrowUpwardOutlined className={`${classes.sortIcon} ${isDesc ? classes.sortAnimation : ''}`} />
+            </div>
         </div>
     )
 };

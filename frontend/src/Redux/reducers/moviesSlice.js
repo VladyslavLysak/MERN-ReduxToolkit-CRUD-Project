@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+const existError = "Movie already exists";
+
 export const fetchMovies = createAsyncThunk('movies/fetchMovies', async () => {
     try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}movies`);
@@ -15,16 +17,17 @@ export const createMovie = createAsyncThunk('movies/createMovie', async (data, t
     try {
         return await axios.post(`${process.env.REACT_APP_BASE_URL}movies/addMovie`, { ...data });
     } catch (error) {
-        return rejectWithValue("Movie with this title already exists")
+        return rejectWithValue(existError)
     }
 });
 
 export const updateMovie = createAsyncThunk('movies/editMovie', async (data, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
     const { values, id } = data;
     try {
         return await axios.put(`${process.env.REACT_APP_BASE_URL}movies/${id}`, { ...values });
     } catch (error) {
-        console.log(error);
+        return rejectWithValue(existError);
     }
 });
 
@@ -51,7 +54,8 @@ const initialState = {
     movies: [],
     isLoading: true,
     error: null,
-    search: ''
+    search: '',
+    isDesc: false,
 };
 
 const moviesSlice = createSlice({
@@ -60,6 +64,9 @@ const moviesSlice = createSlice({
     reducers: {
         onSearchValue: (state, action) => {
             state.search = action.payload;
+        },
+        onDescChange: (state, action) => {
+            state.isDesc = !state.isDesc;
         }
     },
     extraReducers: {
@@ -125,7 +132,8 @@ export const selectMovies = (state) => state.movie.movies;
 export const isMoviesLoading = (state) => state.movie.isLoading;
 export const selectMovieSearch = (state) => state.movie.search;
 export const selectMovieError = (state) => state.movie.error;
+export const selectIsDesc = (state) => state.movie.isDesc;
 
-export const { onSearchValue } = moviesSlice.actions;
+export const { onSearchValue, onDescChange } = moviesSlice.actions;
 
 export default moviesSlice.reducer;
