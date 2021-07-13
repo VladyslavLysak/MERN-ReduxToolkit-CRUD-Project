@@ -61,7 +61,7 @@ const Home = () => {
 
     const filteredMovies = movies?.filter(movie =>
         movie.title.toLowerCase().includes(search.toLowerCase()) ||
-        movie.actors.find(el => el.name.toLowerCase().includes(search.toLowerCase()))
+        movie.actors.find(el => el.name.toLowerCase().includes(search.toLowerCase()) || el.surname.toLowerCase().includes(search.toLowerCase()))
     );
     const sortedMovies = filteredMovies?.sort((a, b) => !isDesc ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
 

@@ -9,7 +9,7 @@ export const initialValues = {
 };
 
 const year = Number(moment().format('YYYY'));
-const pattern = /^[a-zA-Z]/;
+const pattern = /[a-zA-ZА-Яа-я]+/i;
 
 export const getValidationSchema = () => Yup.object().shape({
     title: Yup.string().matches(pattern, 'Incorrect format').min(2, 'Please, provide full title').required('Title is required'),
